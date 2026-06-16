@@ -1,15 +1,74 @@
+import { Tabs } from "expo-router";
+import { tabs } from "@/constants/data";
+import { View } from "react-native";
+import { colors, components } from '@/constants/theme';
 import { Ionicons } from '@expo/vector-icons';
-import { Tabs } from 'expo-router';
-import React from 'react';
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-export default function TabLayout() {
-  return (
-    <Tabs screenOptions={{ headerShown: false, tabBarActiveTintColor: '#10B981', tabBarInactiveTintColor: '#6B7280' }}>
-      <Tabs.Screen name="index" options={{ title: 'Home', tabBarIcon: ({ color, size }) => <Ionicons name="home" size={size} color={color} />, }} />
-      <Tabs.Screen name="subscriptions" options={{ title: 'Subscriptions', tabBarIcon: ({ color, size }) => <Ionicons name="list" size={size} color={color} />, }} />
-      <Tabs.Screen name="insights" options={{ title: 'Insights', tabBarIcon: ({ color, size }) => <Ionicons name="pie-chart" size={size} color={color} />, }} />
-      <Tabs.Screen name="settings" options={{ title: 'Settings', tabBarIcon: ({ color, size }) => <Ionicons name="settings" size={size} color={color} />, }} />
-      <Tabs.Screen name="subscriptions/[id]" options={{ href: null }} />
-    </Tabs>
-  );
-}
+const tabBar = components.tabBar;
+
+const TabIcon = ({ focused, icon }: TabIconProps) => {
+    return (
+        <View className="tabs-icon">
+            <View className={`tabs-pill ${focused ? 'tabs-active' : ''}`}>
+                <Ionicons
+                    name={icon}
+                    size={24}
+                    color={focused ? "#ffffff" : "rgba(255, 255, 255, 0.4)"}
+                />
+            </View>
+        </View>
+    );
+};
+
+const TabLayout = () => {
+    const insets = useSafeAreaInsets();
+
+    return (
+        <Tabs
+            screenOptions={{
+                headerShown: false,
+                tabBarShowLabel: false,
+                tabBarStyle: {
+                    position: 'absolute',
+                    bottom: Math.max(insets.bottom, tabBar.horizontalInset),
+                    height: tabBar.height,
+                    marginHorizontal: tabBar.horizontalInset,
+                    borderRadius: tabBar.radius,
+                    backgroundColor: colors.primary,
+                    borderTopWidth: 0,
+                    elevation: 0,
+                },
+                tabBarItemStyle: {
+                    paddingVertical: tabBar.height / 2 - tabBar.iconFrame / 1.6
+                },
+                tabBarIconStyle: {
+                    width: tabBar.iconFrame,
+                    height: tabBar.iconFrame,
+                    alignItems: 'center'
+                }
+            }}
+        >
+            {tabs.map((tab) => (
+                <Tabs.Screen
+                    key={tab.name}
+                    name={tab.name}
+                    options={{
+                        title: tab.title,
+                        tabBarIcon: ({ focused }) => (
+                            <TabIcon focused={focused} icon={tab.icon} />
+                        )
+                    }}
+                />
+            ))}
+            <Tabs.Screen
+                name="subscriptions/[id]"
+                options={{
+                    href: null,
+                }}
+            />
+        </Tabs>
+    );
+};
+
+export default TabLayout;
