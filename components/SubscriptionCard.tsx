@@ -1,0 +1,37 @@
+import { formatCurrency } from "@/lib/utils";
+import { Ionicons } from "@expo/vector-icons";
+import React from 'react';
+import { Text, View, Image } from 'react-native';
+
+const SubscriptionCard = ({ name, price, currency, icon, billing }: SubscriptionCardProps) => {
+    return (
+        <View className="sub-card bg-card">
+            <View className="sub-head">
+                <View className="sub-main">
+                    {/* Render icon dynamically: vector icon if string, Image if asset object */}
+                    {typeof icon === 'string' ? (
+                        <View className="sub-icon bg-muted items-center justify-center">
+                            <Ionicons name={icon as any} size={32} color="#081126" />
+                        </View>
+                    ) : (
+                        <Image source={icon} className="sub-icon" />
+                    )}
+                    <View className="sub-copy">
+                        <Text numberOfLines={1} className="sub-title">
+                            {name}
+                        </Text>
+                    </View>
+                </View>
+
+                <View className="sub-price-box">
+                    <Text className="sub-price">
+                        {formatCurrency(price, currency)}
+                    </Text>
+                    <Text className="sub-billing">{billing}</Text>
+                </View>
+            </View>
+        </View>
+    );
+};
+
+export default SubscriptionCard;
