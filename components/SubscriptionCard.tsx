@@ -2,7 +2,7 @@ import { formatCurrency, formatStatusLabel, formatSubscriptionDateTime } from "@
 import { Ionicons } from "@expo/vector-icons";
 import { Image, Pressable, Text, View } from 'react-native';
 
-const SubscriptionCard = ({ name, price, currency, icon, billing, color, category, plan, renewalDate, expanded, onPress, paymentMethod, startDate, status }: SubscriptionCardProps) => {
+const SubscriptionCard = ({ name, price, currency, icon, billing, color, category, plan, renewalDate, expanded, onPress, paymentMethod, startDate, status, onCancelPress, isCancelling }: SubscriptionCardProps) => {
     return (
         <Pressable onPress={onPress} className={`sub-card ${expanded ? 'sub-card-expanded' : 'bg-card'}`} style={!expanded && color ? { backgroundColor: color } : undefined}>
             <View className="sub-head">
@@ -61,6 +61,16 @@ const SubscriptionCard = ({ name, price, currency, icon, billing, color, categor
                             </View>
                         </View>
                     </View>
+
+                    <Pressable 
+                        className={`sub-cancel ${isCancelling ? 'sub-cancel-disabled' : ''}`}
+                        onPress={onCancelPress}
+                        disabled={isCancelling}
+                    >
+                        <Text className="sub-cancel-text">
+                            {isCancelling ? 'Cancelling...' : 'Cancel Subscription'}
+                        </Text>
+                    </Pressable>
                 </View>
             )}
         </Pressable>

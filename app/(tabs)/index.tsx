@@ -1,19 +1,22 @@
 import ListHeading from "@/components/ListHeading";
 import SubscriptionCard from "@/components/SubscriptionCard";
 import UpcomingSubscriptionCard from "@/components/UpcomingSubscriptionCard";
-import { HOME_BALANCE, HOME_SUBSCRIPTIONS, HOME_USER, UPCOMING_SUBSCRIPTIONS } from "@/constants/data";
+import { HOME_BALANCE, HOME_SUBSCRIPTIONS, UPCOMING_SUBSCRIPTIONS } from "@/constants/data";
 import { formatCurrency } from "@/lib/utils";
+import { useUser } from "@clerk/clerk-expo";
 import { Ionicons } from "@expo/vector-icons";
 import dayjs from "dayjs";
 import { styled } from "nativewind";
 import { useState } from "react";
-import { FlatList, Pressable, Text, View } from "react-native";
+import { FlatList, Image, Pressable, Text, View } from "react-native";
 import { SafeAreaView as RNSafeAreaView } from 'react-native-safe-area-context';
 
 const SafeAreaView = styled(RNSafeAreaView);
 
 export default function App() {
-  const initials = HOME_USER.name ? HOME_USER.name.split("|")[0].trim().split(" ").map(part => part[0]).join("").substring(0, 2).toUpperCase() : "U";
+  const { user } = useUser();
+  const displayName = user?.firstName || user?.fullName || user?.emailAddresses[0]?.emailAddress || 'User';
+  const initials = displayName ? displayName.split("|")[0].trim().split(" ").map(part => part[0]).join("").substring(0, 2).toUpperCase() : "U";
   const [expandedSubscriptionId, setExpandedSubscriptionId] = useState<string | null>(null);
 
   return (
@@ -23,10 +26,14 @@ export default function App() {
           <View>
             <View className="home-header">
               <View className="home-user">
-                <View className="home-avatar bg-primary items-center justify-center border border-primary/10 shadow-sm">
-                  <Text className="text-white text-xl font-sans-bold">{initials}</Text>
+                <View className="home-avatar bg-primary items-center justify-center border border-primary/10 shadow-sm overflow-hidden">
+                  {user?.imageUrl ? (
+                    <Image source={{ uri: user.imageUrl }} className="w-full h-full rounded-full" />
+                  ) : (
+                    <Text className="text-white text-xl font-sans-bold">{initials}</Text>
+                  )}
                 </View>
-                <Text className="home-user-name">{HOME_USER.name}</Text>
+                <Text className="home-user-name">{displayName}</Text>
               </View>
               <Pressable
                 className="home-add-icon bg-white border border-border rounded-full items-center justify-center shadow-sm active:opacity-80"
