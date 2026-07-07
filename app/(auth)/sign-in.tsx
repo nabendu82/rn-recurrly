@@ -1,4 +1,5 @@
 import { useSignIn } from '@clerk/clerk-expo';
+import { Ionicons } from '@expo/vector-icons';
 import { Link, useRouter } from 'expo-router';
 import { styled } from 'nativewind';
 import { useState } from 'react';
@@ -16,6 +17,8 @@ const SignIn = () => {
     const [error, setError] = useState('');
     const [emailTouched, setEmailTouched] = useState(false);
     const [passwordTouched, setPasswordTouched] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+
     const emailValid = emailAddress.length === 0 || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailAddress);
     const passwordValid = password.length > 0;
     const formValid = emailAddress.length > 0 && password.length > 0 && emailValid;
@@ -85,20 +88,42 @@ const SignIn = () => {
 
                                 <View className="auth-field">
                                     <Text className="auth-label">Password</Text>
-                                    <TextInput
-                                        className={`auth-input ${passwordTouched && !passwordValid && 'auth-input-error'}`}
-                                        value={password}
-                                        placeholder="Enter your password"
-                                        placeholderTextColor="rgba(0, 0, 0, 0.4)"
-                                        secureTextEntry
-                                        onChangeText={setPassword}
-                                        onBlur={() => setPasswordTouched(true)}
-                                        autoComplete="password"
-                                    />
+                                    <View className="relative">
+                                        <TextInput
+                                            className={`auth-input pr-12 ${passwordTouched && !passwordValid && 'auth-input-error'}`}
+                                            value={password}
+                                            placeholder="Enter your password"
+                                            placeholderTextColor="rgba(0, 0, 0, 0.4)"
+                                            secureTextEntry={!showPassword}
+                                            onChangeText={setPassword}
+                                            onBlur={() => setPasswordTouched(true)}
+                                            autoComplete="password"
+                                        />
+                                        <Pressable
+                                            onPress={() => setShowPassword(!showPassword)}
+                                            className="absolute right-3 top-0 bottom-0 justify-center px-1"
+                                        >
+                                            <Ionicons
+                                                name={showPassword ? 'eye-off-outline' : 'eye-outline'}
+                                                size={20}
+                                                color="rgba(0,0,0,0.4)"
+                                            />
+                                        </Pressable>
+                                    </View>
                                     {passwordTouched && !passwordValid && (
                                         <Text className="auth-error">Password is required</Text>
                                     )}
                                 </View>
+
+                                {/* Forgot Password link */}
+                                <View className="items-end -mt-2">
+                                    <Link href="/(auth)/forgot-password" asChild>
+                                        <Pressable>
+                                            <Text className="auth-link text-sm">Forgot password?</Text>
+                                        </Pressable>
+                                    </Link>
+                                </View>
+
                                 {error ? <Text className="auth-error">{error}</Text> : null}
                                 <Pressable className={`auth-button ${(!formValid || loading) && 'auth-button-disabled'}`} onPress={handleSubmit} disabled={!formValid || loading}>
                                     <Text className="auth-button-text">{loading ? 'Signing In...' : 'Sign In'}</Text>
